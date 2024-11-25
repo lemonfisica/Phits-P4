@@ -1,0 +1,62 @@
+ [ Title ]
+ Simulação de Hp(10) com feixe de nêutrons
+
+[ Parameters ]
+maxcas = 1000000         # Número de partículas por batch (ajuste conforme necessário)
+maxbch = 10              # Número de batches (ajuste conforme necessário)
+
+[ Source ]
+s-type = f               # Fonte plana
+s-size = 4.0 4.0         # Tamanho do feixe: 4 cm x 4 cm
+dir    = 0 0 1           # Direção do feixe: eixo Z positivo
+energy = 1.0E+6          # Energia dos nêutrons: 1 MeV
+part   = neutron         # Tipo de partícula: nêutrons
+
+[ Material ]
+MAT[1]                   # Ar
+   N  -0.755
+   O  -0.232
+   Ar -0.013
+
+MAT[2]                   # Fantoma de tecido equivalente
+   H  0.1
+   O  0.75
+   C  0.15
+   density 1.0
+
+MAT[3]                   # Detector de água (para dose em Hp(10))
+   H  2
+   O  1
+   density 1.0
+
+   [ Surface ]
+1  rpp -50 50 -50 50 -50 50     # Mundo cúbico de 100 cm
+2  rpp -10 10 -10 10 -10 10     # Paralelepípedo de 20 cm
+3  rcc 0 0 0 0 0 0.1 0.5        # Cilindro (raio 0.5 cm, altura 1 mm) posicionado no centro
+4  pz 0.1                       # Plano no eixo Z para colocar o detector a 10 mm de profundidade
+
+
+[ Cell ]
+1  1  -1                         # Ar no mundo
+2  2  -2  1                       # Tecido equivalente no paralelepípedo
+3  3  -3  2 -4                    # Detector de água (cilindro) posicionado no fantoma
+
+[ T - D E P O S I T ]
+title = Cálculo de Hp(10)
+mesh  = r-z                      # Malha cilíndrica
+rmin  = 0.0                      # Raio inicial do cilindro
+rmax  = 0.5                      # Raio máximo do cilindro (igual ao detector)
+nr    = 1                        # Apenas uma divisão radial (dose central)
+zmin  = 0.0                      # Profundidade inicial
+zmax  = 0.1                      # Profundidade final (1 mm de altura do cilindro)
+nz    = 1                        # Uma camada axial para toda a altura
+part  = all                      # Considera todas as partículas secundárias
+unit  = 0                        # Saída em Gy/source
+file  = hp10.out                 # Arquivo de saída
+epsout =  1
+gshow =  1 
+
+[ vis ]
+
+v-cell
+v-cut yz
